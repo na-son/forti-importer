@@ -6,12 +6,6 @@ import sys
 # usage: python3 main.py example.cfg
 
 # this takes a raw paste from "show firewall policy"
-# and makes terraform resources + imports
-
-# you will still need to match strings to resources
-# like addresses, interfaces, and services
-
-# if policy.tf already exists, this will append to the file
 
 
 def normalize(input: str) -> str:
