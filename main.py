@@ -8,13 +8,20 @@ import sys
 # this takes a raw paste from "show firewall policy"
 # and makes terraform resources + imports
 
-# it does NOT like spaces or slashes in address / policy names
-# you may need to clean those up in the raw paste
-
 # you will still need to match strings to resources
 # like addresses, interfaces, and services
 
 # if policy.tf already exists, this will append to the file
+
+
+def normalize(input: str) -> str:
+    """Converts input ' ' spaces to '-' dashes and downcases
+    Returns a string
+    """
+
+    clean = input.replace(" ", "-").lower()
+
+    return clean
 
 
 def generate_terraform(input: str):
@@ -60,7 +67,7 @@ def generate_terraform(input: str):
             + "\n  "
             + f'id = "{policy_id}"'
             + "\n  "
-            + f"to = fortios_firewall_policy.{name}"
+            + f"to = fortios_firewall_policy.{normalize(name)}"
             + "\n"
             + "}"
             + "\n\n"
@@ -68,7 +75,7 @@ def generate_terraform(input: str):
 
         # Policy attributes
         f.write(
-            f'resource "fortios_firewall_policy" "{name}" {{\n'
+            f'resource "fortios_firewall_policy" "{normalize(name)}" {{\n'
             + f'  name     = "{name}"\n'
             + f"  policyid = {policy_id}\n"
             + action
@@ -83,6 +90,7 @@ def generate_terraform(input: str):
         # end terraform resource
         f.write("\n}\n\n\n")
 
+    f.write("### END OF GENERATED CODE ###" + "\n\n")
     f.close()
     return
 
