@@ -24,6 +24,9 @@ def generate_terraform(input: str):
 
     f = open("policy.tf", "a")
 
+    action = '  action   = "accept"\n'
+    schedule = '  schedule = "always"\n'
+
     # Add header for appended files
     f.write("### AUTOMATICALLY GENERATED CODE BELOW ###" + "\n\n\n")
 
@@ -51,40 +54,31 @@ def generate_terraform(input: str):
             "service": service_match.group(1).split(),
         }
 
-        # Create import for the policy
+        # Import for policy
         f.write(
-            "import {\n"
-            + "id = "
-            + '"'
-            + policy_id
-            + '"\n'
-            + "to = "
-            + "fortios_firewall_policy."
-            + name
-            + "\n}"
+            "import {"
+            + "\n  "
+            + f'id = "{policy_id}"'
+            + "\n  "
+            + f"to = fortios_firewall_policy.{name}"
+            + "\n"
+            + "}"
             + "\n\n"
         )
 
+        # Policy attributes
         f.write(
-            'resource "fortios_firewall_policy" '
-            + '"'
-            + name
-            + '" '
-            + "{\n"
-            + 'action = "accept"'
-            + '\nname = "'
-            + name
-            + '"\n'
-            + "policyid = "
-            + policy_id
-            + "\n"
-            + 'schedule = "always"\n'
+            f'resource "fortios_firewall_policy" "{name}" {{\n'
+            + f'  name     = "{name}"\n'
+            + f"  policyid = {policy_id}\n"
+            + action
+            + schedule
         )
 
-        # this iterates through multiple values and produces terraform blocks
-        for block in blocks:
-            for name in blocks[block]:
-                f.write("\n" + block + " {" + "\nname = " + name + "\n}")
+        # Policy blocks
+        for srcdst_type in blocks:
+            for srcdst in blocks[srcdst_type]:
+                f.write(f"\n  {srcdst_type} {{\n" + f"    name = {srcdst}\n  }}")
 
         # end terraform resource
         f.write("\n}\n\n\n")
