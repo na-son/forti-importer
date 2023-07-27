@@ -40,9 +40,9 @@ def generate_terraform(input: str):
         policy_id = re.search("\d+", p).group(0)
         name = re.search('(?:set name) "(.+)"', p).group(1)
         srcintf_match = re.search('(?:set srcintf)(( "[a-zA-Z0-9_\-\s]+")+)', p)
-        srcaddr_match = re.search('(?:set srcaddr)(( "[a-zA-Z0-9_\-\s]+")+)', p)
+        srcaddr_match = re.search('(?:set srcaddr)(( "[a-zA-Z0-9_.\-\s]+")+)', p)
         dstintf_match = re.search('(?:set dstintf)(( "[a-zA-Z0-9_\-\s]+")+)', p)
-        dstaddr_match = re.search('(?:set dstaddr)(( "[a-zA-Z0-9_\-\s]+")+)', p)
+        dstaddr_match = re.search('(?:set dstaddr)(( "[a-zA-Z0-9_.\-\s]+")+)', p)
         service_match = re.search('(?:set service)(( "[a-zA-Z0-9_\-\s]+")+)', p)
 
         # Format of multi src/dst in a policy differs between cli / tf
